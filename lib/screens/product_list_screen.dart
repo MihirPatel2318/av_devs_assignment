@@ -20,7 +20,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
-  String? _selectedCategory;
 
   @override
   void initState() {
@@ -50,77 +49,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
     });
   }
 
-  void _showCategoryFilter() {
-    final categoriesAsync = ref.read(categoriesProvider);
-
-    categoriesAsync.when(
-      data: (categories) {
-        showModalBottomSheet(
-          context: context,
-          builder: (context) => Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Filter by Category',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  title: const Text('All Products'),
-                  leading: Radio<String?>(
-                    value: null,
-                    groupValue: _selectedCategory,
-                    onChanged: (value) {
-                      setState(() => _selectedCategory = value);
-                      ref.read(productsProvider.notifier).filterByCategory(null);
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return ListTile(
-                        title: Text(category),
-                        leading: Radio<String>(
-                          value: category,
-                          groupValue: _selectedCategory,
-                          onChanged: (value) {
-                            setState(() => _selectedCategory = value);
-                            ref
-                                .read(productsProvider.notifier)
-                                .filterByCategory(value);
-                            Navigator.pop(context);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Loading categories...')),
-        );
-      },
-      error: (error, stack) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${ErrorHandler.getErrorMessage(error)}')),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(productsProvider);
@@ -130,10 +58,6 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
       appBar: AppBar(
         title: const Text('Products'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showCategoryFilter,
-          ),
           Stack(
             children: [
               IconButton(
