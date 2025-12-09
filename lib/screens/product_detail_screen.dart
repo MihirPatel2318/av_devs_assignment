@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../providers/products_provider.dart';
+import 'cart_screen.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product product;
@@ -212,7 +213,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           action: SnackBarAction(
                             label: 'View Cart',
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CartScreen(),
+                                ),
+                              );
                             },
                           ),
                         ),
